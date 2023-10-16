@@ -1,7 +1,7 @@
 import { type MutableRefObject } from 'react'
 import { env } from './env'
 
-export function getRootOwner<T extends Element | MutableRefObject<Element | null>>(
+export function getRootNode<T extends Element | MutableRefObject<Element | null>>(
   element: T | null | undefined
 ) {
   if (env.isServer) {
@@ -25,7 +25,7 @@ export function getRootOwner<T extends Element | MutableRefObject<Element | null
   return document
 }
 
-export function getRootOwnerDocument<T extends Element | MutableRefObject<Element | null>>(
+export function getRootDocument<T extends Element | MutableRefObject<Element | null>>(
   element: T | null | undefined
 ) {
   if (env.isServer) {

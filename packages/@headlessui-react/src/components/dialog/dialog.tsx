@@ -24,7 +24,7 @@ import { useEventListener } from '../../hooks/use-event-listener'
 import { useId } from '../../hooks/use-id'
 import { useInert } from '../../hooks/use-inert'
 import { useOutsideClick } from '../../hooks/use-outside-click'
-import { useRootDocument, useRootOwner } from '../../hooks/use-owner'
+import { useRootDocument, useRootNode } from '../../hooks/use-owner'
 import { useRootContainers } from '../../hooks/use-root-containers'
 import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complete'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
@@ -179,7 +179,7 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
   let internalDialogRef = useRef<HTMLDivElement | null>(null)
   let dialogRef = useSyncRefs(internalDialogRef, ref)
 
-  let ownerRoot = useRootOwner(internalDialogRef)
+  let ownerRoot = useRootNode(internalDialogRef)
   let ownerDocument = useRootDocument(internalDialogRef)
 
   // Validations

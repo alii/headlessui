@@ -25,7 +25,7 @@ import { useId } from '../../hooks/use-id'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { useLatestValue } from '../../hooks/use-latest-value'
 import { useOutsideClick } from '../../hooks/use-outside-click'
-import { useRootOwner } from '../../hooks/use-owner'
+import { useRootNode } from '../../hooks/use-owner'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
@@ -999,7 +999,7 @@ function InputFn<
   let actions = useActions('Combobox.Input')
 
   let inputRef = useSyncRefs(data.inputRef, ref)
-  let ownerDocument = useRootOwner(data.inputRef)
+  let ownerDocument = useRootNode(data.inputRef)
 
   let isTyping = useRef(false)
 

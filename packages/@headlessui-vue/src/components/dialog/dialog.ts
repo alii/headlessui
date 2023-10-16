@@ -169,6 +169,7 @@ export let Dialog = defineComponent({
       if (isClosing.value) return false
       return enabled.value
     })
+
     let resolveRootOfMainTreeNode = computed(() => {
       return (Array.from(ownerDocument.value?.querySelectorAll('body > *') ?? []).find((root) => {
         // Skip the portal root, we don't want to make that one inert

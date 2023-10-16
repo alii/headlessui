@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { getRootOwner } from '../utils/owner'
+import { getRootNode } from '../utils/owner'
 import { useIsoMorphicEffect } from './use-iso-morphic-effect'
 
 type AcceptNode = (
@@ -32,7 +32,7 @@ export function useTreeWalker({
     if (!container) return
     if (!enabled) return
 
-    let ownerDocument = getRootOwner(container)
+    let ownerDocument = getRootNode(container)
     if (!ownerDocument) return
     if (ownerDocument instanceof ShadowRoot) {
       console.warn(

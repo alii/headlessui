@@ -23,7 +23,7 @@ import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-cl
 import type { Props } from '../../types'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import { match } from '../../utils/match'
-import { getRootOwner } from '../../utils/owner'
+import { getRootNode } from '../../utils/owner'
 import {
   Features,
   forwardRefWithAs,
@@ -191,7 +191,7 @@ function DisclosureFn<TTag extends ElementType = typeof DEFAULT_DISCLOSURE_TAG>(
 
   let close = useEvent((focusableElement?: HTMLElement | MutableRefObject<HTMLElement | null>) => {
     dispatch({ type: ActionTypes.CloseDisclosure })
-    let ownerDocument = getRootOwner(internalDisclosureRef)
+    let ownerDocument = getRootNode(internalDisclosureRef)
     if (!ownerDocument) return
     if (!buttonId) return
 
