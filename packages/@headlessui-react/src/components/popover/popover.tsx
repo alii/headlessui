@@ -25,7 +25,7 @@ import { useId } from '../../hooks/use-id'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { useLatestValue } from '../../hooks/use-latest-value'
 import { useOutsideClick } from '../../hooks/use-outside-click'
-import { useOwnerDocument } from '../../hooks/use-owner'
+import { useRootDocument, useRootOwner } from '../../hooks/use-owner'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useMainTreeNode, useRootContainers } from '../../hooks/use-root-containers'
 import { optionalRef, useSyncRefs } from '../../hooks/use-sync-refs'
@@ -44,7 +44,7 @@ import {
 } from '../../utils/focus-management'
 import { match } from '../../utils/match'
 import { microTask } from '../../utils/micro-task'
-import { getOwnerDocument } from '../../utils/owner'
+import { getRootOwner } from '../../utils/owner'
 import {
   Features,
   forwardRefWithAs,
@@ -249,7 +249,8 @@ function PopoverFn<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
     dispatch,
   ] = reducerBag
 
-  let ownerDocument = useOwnerDocument(internalPopoverRef.current ?? button)
+  let ownerRoot = useRootOwner(internalPopoverRef.current ?? button)
+  let ownerDocument = useRootDocument(internalPopoverRef.current ?? button)
 
   let isPortalled = useMemo(() => {
     if (!button) return false
@@ -303,9 +304,8 @@ function PopoverFn<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
   let isFocusWithinPopoverGroup = useEvent(() => {
     return (
       groupContext?.isFocusWithinPopoverGroup() ??
-      (ownerDocument?.activeElement &&
-        (button?.contains(ownerDocument.activeElement) ||
-          panel?.contains(ownerDocument.activeElement)))
+      (ownerRoot?.activeElement &&
+        (button?.contains(ownerRoot.activeElement) || panel?.contains(ownerRoot.activeElement)))
     )
   })
 
@@ -505,7 +505,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
         }
   )
   let withinPanelButtonRef = useSyncRefs(internalButtonRef, ref)
-  let ownerDocument = useOwnerDocument(internalButtonRef)
+  let ownerDocument = useRootOwner(internalButtonRef)
 
   let handleKeyDown = useEvent((event: ReactKeyboardEvent<HTMLButtonElement>) => {
     if (isWithinPanel) {
@@ -755,7 +755,7 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   let panelRef = useSyncRefs(internalPanelRef, ref, (panel) => {
     dispatch({ type: ActionTypes.SetPanel, panel })
   })
-  let ownerDocument = useOwnerDocument(internalPanelRef)
+  let ownerDocument = useRootOwner(internalPanelRef)
   let mergeRefs = useMergeRefsFn()
 
   useIsoMorphicEffect(() => {
@@ -994,7 +994,7 @@ function GroupFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   })
 
   let isFocusWithinPopoverGroup = useEvent(() => {
-    let ownerDocument = getOwnerDocument(internalGroupRef)
+    let ownerDocument = getRootOwner(internalGroupRef)
     if (!ownerDocument) return false
     let element = ownerDocument.activeElement
 

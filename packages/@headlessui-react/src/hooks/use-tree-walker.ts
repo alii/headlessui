@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { getOwnerDocument } from '../utils/owner'
+import { getRootOwner } from '../utils/owner'
 import { useIsoMorphicEffect } from './use-iso-morphic-effect'
 
 type AcceptNode = (
@@ -31,13 +31,24 @@ export function useTreeWalker({
   useIsoMorphicEffect(() => {
     if (!container) return
     if (!enabled) return
-    let ownerDocument = getOwnerDocument(container)
+
+    let ownerDocument = getRootOwner(container)
     if (!ownerDocument) return
+    if (ownerDocument instanceof ShadowRoot) {
+      console.warn(
+        new Error(
+          'useTreeWalker may not be called inside a Shadow DOM. This may break some components'
+        )
+      )
+
+      return
+    }
 
     let accept = acceptRef.current
     let walk = walkRef.current
 
     let acceptNode = Object.assign((node: HTMLElement) => accept(node), { acceptNode: accept })
+
     let walker = ownerDocument.createTreeWalker(
       container,
       NodeFilter.SHOW_ELEMENT,
@@ -46,6 +57,8 @@ export function useTreeWalker({
       false
     )
 
-    while (walker.nextNode()) walk(walker.currentNode as HTMLElement)
+    while (walker.nextNode()) {
+      walk(walker.currentNode as HTMLElement)
+    }
   }, [container, enabled, acceptRef, walkRef])
 }

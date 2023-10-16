@@ -20,7 +20,7 @@ import { useEvent } from '../../hooks/use-event'
 import { useId } from '../../hooks/use-id'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { useOutsideClick } from '../../hooks/use-outside-click'
-import { useOwnerDocument } from '../../hooks/use-owner'
+import { useRootOwner } from '../../hooks/use-owner'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useTextValue } from '../../hooks/use-text-value'
@@ -437,7 +437,7 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
   let { id = `headlessui-menu-items-${internalId}`, ...theirProps } = props
   let [state, dispatch] = useMenuContext('Menu.Items')
   let itemsRef = useSyncRefs(state.itemsRef, ref)
-  let ownerDocument = useOwnerDocument(state.itemsRef)
+  let ownerDocument = useRootOwner(state.itemsRef)
 
   let searchDisposables = useDisposables()
 

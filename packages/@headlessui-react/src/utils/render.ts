@@ -185,8 +185,10 @@ function _render<TTag extends ElementType, TSlot>(
 
       let newClassName =
         typeof childProps?.className === 'function'
-          ? (...args: any[]) => classNames(childProps?.className(...args), rest.className)
-          : classNames(childProps?.className, rest.className)
+          ? // @ts-expect-error Fix me
+            (...args: any[]) => classNames(childProps?.className(...args), rest.className)
+          : // @ts-expect-error Fix me
+            classNames(childProps?.className, rest.className)
 
       let classNameProps = newClassName ? { className: newClassName } : {}
 

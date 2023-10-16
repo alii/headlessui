@@ -35,7 +35,7 @@ import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import { Focus, focusIn, FocusResult, sortByDomNode } from '../../utils/focus-management'
 import { attemptSubmit, objectToFormEntries } from '../../utils/form'
 import { match } from '../../utils/match'
-import { getOwnerDocument } from '../../utils/owner'
+import { getRootOwner } from '../../utils/owner'
 import {
   compact,
   forwardRefWithAs,
@@ -231,7 +231,7 @@ function RadioGroupFn<TTag extends ElementType = typeof DEFAULT_RADIO_GROUP_TAG,
     let container = internalRadioGroupRef.current
     if (!container) return
 
-    let ownerDocument = getOwnerDocument(container)
+    let ownerDocument = getRootOwner(container)
 
     let all = options
       .filter((option) => option.propsRef.current.disabled === false)

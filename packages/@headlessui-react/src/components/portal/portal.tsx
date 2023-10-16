@@ -15,7 +15,7 @@ import { createPortal } from 'react-dom'
 import { useEvent } from '../../hooks/use-event'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { useOnUnmount } from '../../hooks/use-on-unmount'
-import { useOwnerDocument } from '../../hooks/use-owner'
+import { ownerToRootElement, useRootDocument, useRootOwner } from '../../hooks/use-owner'
 import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complete'
 import { optionalRef, useSyncRefs } from '../../hooks/use-sync-refs'
 import { usePortalRoot } from '../../internal/portal-force-root'
@@ -27,7 +27,8 @@ function usePortalTarget(ref: MutableRefObject<HTMLElement | null>): HTMLElement
   let forceInRoot = usePortalRoot()
   let groupTarget = useContext(PortalGroupContext)
 
-  let ownerDocument = useOwnerDocument(ref)
+  let ownerRoot = useRootOwner(ref)
+  let ownerDocument = useRootDocument(ref)
 
   let [target, setTarget] = useState(() => {
     // Group context is used, but still null
@@ -35,24 +36,28 @@ function usePortalTarget(ref: MutableRefObject<HTMLElement | null>): HTMLElement
 
     // No group context is used, let's create a default portal root
     if (env.isServer) return null
-    let existingRoot = ownerDocument?.getElementById('headlessui-portal-root')
+    let existingRoot = ownerRoot?.getElementById('headlessui-portal-root')
     if (existingRoot) return existingRoot
 
-    if (ownerDocument === null) return null
+    if (ownerRoot === null || ownerDocument === null) return null
 
-    let root = ownerDocument.createElement('div')
-    root.setAttribute('id', 'headlessui-portal-root')
-    return ownerDocument.body.appendChild(root)
+    let div = ownerDocument.createElement('div')
+    div.setAttribute('id', 'headlessui-portal-root')
+
+    return ownerToRootElement(ownerRoot).appendChild(div)
   })
 
   // Ensure the portal root is always in the DOM
   useEffect(() => {
     if (target === null) return
+    if (!ownerRoot) return
 
-    if (!ownerDocument?.body.contains(target)) {
-      ownerDocument?.body.appendChild(target)
+    const root = ownerToRootElement(ownerRoot)
+
+    if (!root.contains(target)) {
+      root.appendChild(target)
     }
-  }, [target, ownerDocument])
+  }, [target, ownerRoot])
 
   useEffect(() => {
     if (forceInRoot) return
@@ -82,7 +87,7 @@ function PortalFn<TTag extends ElementType = typeof DEFAULT_PORTAL_TAG>(
     }),
     ref
   )
-  let ownerDocument = useOwnerDocument(internalPortalRootRef)
+  let ownerDocument = useRootDocument(internalPortalRootRef)
   let target = usePortalTarget(internalPortalRootRef)
   let [element] = useState<HTMLDivElement | null>(() =>
     env.isServer ? null : ownerDocument?.createElement('div') ?? null

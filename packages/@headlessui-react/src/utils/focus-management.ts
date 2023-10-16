@@ -1,6 +1,6 @@
 import { disposables } from './disposables'
 import { match } from './match'
-import { getOwnerDocument } from './owner'
+import { getRootOwner } from './owner'
 
 // Credit:
 //  - https://stackoverflow.com/a/30753870
@@ -85,7 +85,13 @@ export function isFocusableElement(
   element: HTMLElement,
   mode: FocusableMode = FocusableMode.Strict
 ) {
-  if (element === getOwnerDocument(element)?.body) return false
+  const owner = getRootOwner(element)
+
+  if (owner) {
+    if ('body' in owner && element === owner.body) {
+      return false
+    }
+  }
 
   return match(mode, {
     [FocusableMode.Strict]() {
@@ -105,7 +111,8 @@ export function isFocusableElement(
 }
 
 export function restoreFocusIfNecessary(element: HTMLElement | null) {
-  let ownerDocument = getOwnerDocument(element)
+  let ownerDocument = getRootOwner(element)
+
   disposables().nextFrame(() => {
     if (
       ownerDocument &&

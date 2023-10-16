@@ -35,7 +35,7 @@ import { disposables } from '../../utils/disposables'
 import { FocusableMode, isFocusableElement, sortByDomNode } from '../../utils/focus-management'
 import { objectToFormEntries } from '../../utils/form'
 import { match } from '../../utils/match'
-import { getOwnerDocument } from '../../utils/owner'
+import { getRootOwner } from '../../utils/owner'
 import {
   compact,
   Features,
@@ -782,7 +782,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     let container = data.optionsRef.current
     if (!container) return
     if (data.listboxState !== ListboxStates.Open) return
-    if (container === getOwnerDocument(container)?.activeElement) return
+    if (container === getRootOwner(container)?.activeElement) return
 
     container.focus({ preventScroll: true })
   }, [data.listboxState, data.optionsRef])

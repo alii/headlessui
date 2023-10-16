@@ -24,7 +24,7 @@ import { useEventListener } from '../../hooks/use-event-listener'
 import { useId } from '../../hooks/use-id'
 import { useInert } from '../../hooks/use-inert'
 import { useOutsideClick } from '../../hooks/use-outside-click'
-import { useOwnerDocument } from '../../hooks/use-owner'
+import { useRootDocument, useRootOwner } from '../../hooks/use-owner'
 import { useRootContainers } from '../../hooks/use-root-containers'
 import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complete'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
@@ -179,7 +179,8 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
   let internalDialogRef = useRef<HTMLDivElement | null>(null)
   let dialogRef = useSyncRefs(internalDialogRef, ref)
 
-  let ownerDocument = useOwnerDocument(internalDialogRef)
+  let ownerRoot = useRootOwner(internalDialogRef)
+  let ownerDocument = useRootDocument(internalDialogRef)
 
   // Validations
   let hasOpen = props.hasOwnProperty('open') || usesOpenClosedState !== null
@@ -271,7 +272,7 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
     return enabled
   })()
   let resolveRootOfMainTreeNode = useCallback(() => {
-    return (Array.from(ownerDocument?.querySelectorAll('body > *') ?? []).find((root) => {
+    return (Array.from(ownerRoot?.querySelectorAll('body > *') ?? []).find((root) => {
       // Skip the portal root, we don't want to make that one inert
       if (root.id === 'headlessui-portal-root') return false
 
@@ -287,7 +288,7 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
     return enabled
   })()
   let resolveRootOfParentDialog = useCallback(() => {
-    return (Array.from(ownerDocument?.querySelectorAll('[data-headlessui-portal]') ?? []).find(
+    return (Array.from(ownerRoot?.querySelectorAll('[data-headlessui-portal]') ?? []).find(
       (root) => root.contains(mainTreeNodeRef.current) && root instanceof HTMLElement
     ) ?? null) as HTMLElement | null
   }, [mainTreeNodeRef])
@@ -307,6 +308,7 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
     if (dialogState !== DialogStates.Open) return false
     return true
   })()
+
   useEventListener(ownerDocument?.defaultView, 'keydown', (event) => {
     if (!escapeToCloseEnabled) return
     if (event.defaultPrevented) return
@@ -323,6 +325,7 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
     if (hasParentDialog) return false
     return true
   })()
+
   useScrollLock(ownerDocument, scrollLockEnabled, resolveRootContainers)
 
   // Trigger close when the FocusTrap gets hidden

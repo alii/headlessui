@@ -1,7 +1,7 @@
 import React, { MutableRefObject, useMemo, useRef } from 'react'
 import { Features as HiddenFeatures, Hidden } from '../internal/hidden'
 import { useEvent } from './use-event'
-import { useOwnerDocument } from './use-owner'
+import { useRootOwner } from './use-owner'
 
 export function useRootContainers({
   defaultContainers = [],
@@ -14,7 +14,7 @@ export function useRootContainers({
 } = {}) {
   // Reference to a node in the "main" tree, not in the portalled Dialog tree.
   let mainTreeNodeRef = useRef<HTMLElement | null>(_mainTreeNodeRef?.current ?? null)
-  let ownerDocument = useOwnerDocument(mainTreeNodeRef)
+  let ownerDocument = useRootOwner(mainTreeNodeRef)
 
   let resolveContainers = useEvent(() => {
     let containers: HTMLElement[] = []

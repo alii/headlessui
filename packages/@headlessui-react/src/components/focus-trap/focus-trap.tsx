@@ -10,7 +10,7 @@ import { useEvent } from '../../hooks/use-event'
 import { useEventListener } from '../../hooks/use-event-listener'
 import { useIsMounted } from '../../hooks/use-is-mounted'
 import { useOnUnmount } from '../../hooks/use-on-unmount'
-import { useOwnerDocument } from '../../hooks/use-owner'
+import { useRootDocument } from '../../hooks/use-owner'
 import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complete'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { Direction as TabDirection, useTabDirection } from '../../hooks/use-tab-direction'
@@ -83,9 +83,10 @@ function FocusTrapFn<TTag extends ElementType = typeof DEFAULT_FOCUS_TRAP_TAG>(
     features = Features.None
   }
 
-  let ownerDocument = useOwnerDocument(container)
+  let ownerDocument = useRootDocument(container)
 
   useRestoreFocus({ ownerDocument }, Boolean(features & Features.RestoreFocus))
+
   let previousActiveElement = useInitialFocus(
     { ownerDocument, container, initialFocus },
     Boolean(features & Features.InitialFocus)
