@@ -23,7 +23,10 @@ import type { Props } from '../../types'
 import { env } from '../../utils/env'
 import { forwardRefWithAs, HasDisplayName, RefProp, render } from '../../utils/render'
 
-function usePortalTarget(ref: MutableRefObject<HTMLElement | null>): HTMLElement | null {
+function usePortalTarget(
+  ref: MutableRefObject<HTMLElement | null>,
+  root: HTMLElement | null
+): HTMLElement | null {
   let forceInRoot = usePortalRoot()
   let groupTarget = useContext(PortalGroupContext)
 
@@ -37,15 +40,16 @@ function usePortalTarget(ref: MutableRefObject<HTMLElement | null>): HTMLElement
     // No group context is used, let's create a default portal root
     if (env.isServer || !ownerRoot || !ownerDocument) return null
 
-    let existingRoot = ownerRoot.getElementById('headlessui-portal-root')
+    let existingRoot = (root ? root : ownerRoot).querySelector(
+      '[id="headlessui-portal-root"]'
+    ) as HTMLElement | null
+
     if (existingRoot) return existingRoot
 
     let div = ownerDocument.createElement('div')
     div.setAttribute('id', 'headlessui-portal-root')
 
-    const el = ownerToRootElement(ownerRoot)
-
-    console.debug(el)
+    const el = root ? root : ownerToRootElement(ownerRoot)
 
     return el.appendChild(div)
   })
@@ -104,8 +108,7 @@ function PortalFn<TTag extends ElementType = typeof DEFAULT_PORTAL_TAG>(
   }
 
   let ownerDocument = useRootDocument(internalPortalRootRef)
-  let createdPortalTarget = usePortalTarget(internalPortalRootRef)
-  let target = root ?? createdPortalTarget
+  let target = usePortalTarget(internalPortalRootRef, root)
 
   let [element] = useState<HTMLDivElement | null>(() => ownerDocument?.createElement('div') ?? null)
   let parent = useContext(PortalParentContext)
