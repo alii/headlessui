@@ -40,9 +40,7 @@ function usePortalTarget(
     // No group context is used, let's create a default portal root
     if (env.isServer || !ownerRoot || !ownerDocument) return null
 
-    let existingRoot = (root ? root : ownerRoot).querySelector(
-      '[id="headlessui-portal-root"]'
-    ) as HTMLElement | null
+    let existingRoot = ownerDocument.getElementById('headlessui-portal-root')
 
     if (existingRoot) return existingRoot
 
