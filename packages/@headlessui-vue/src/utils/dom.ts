@@ -1,10 +1,10 @@
 import { ComponentPublicInstance, Ref } from 'vue'
 
-type AsElement<T extends HTMLElement | ComponentPublicInstance> =
+type AsElement<T extends Element | ComponentPublicInstance> =
   | (T extends HTMLElement ? T : HTMLElement)
   | null
 
-export function dom<T extends HTMLElement | ComponentPublicInstance>(
+export function dom<T extends Element | ComponentPublicInstance>(
   ref?: Ref<T | null>
 ): AsElement<T> | null {
   if (ref == null) return null

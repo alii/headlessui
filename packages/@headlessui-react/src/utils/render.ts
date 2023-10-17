@@ -207,16 +207,16 @@ function _render<TTag extends ElementType, TSlot>(
     }
   }
 
-  return createElement(
-    Component,
-    Object.assign(
-      {},
-      omit(rest, ['ref']),
-      Component !== Fragment && refRelatedProps,
-      Component !== Fragment && dataAttributes
-    ),
-    resolvedChildren
+  const resolvedProps = Object.assign(
+    {},
+    omit(rest, ['ref']),
+    Component !== Fragment && refRelatedProps,
+    Component !== Fragment && dataAttributes
   )
+
+  console.debug('_render', Component, resolvedProps, resolvedChildren)
+
+  return createElement(Component, resolvedProps, resolvedChildren)
 }
 
 /**

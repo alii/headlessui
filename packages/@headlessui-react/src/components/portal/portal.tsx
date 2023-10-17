@@ -78,28 +78,35 @@ function usePortalTarget(ref: MutableRefObject<HTMLElement | null>): HTMLElement
 let DEFAULT_PORTAL_TAG = Fragment
 interface PortalRenderPropArg {}
 
-export type PortalProps<TTag extends ElementType> = Props<TTag, PortalRenderPropArg>
+export type PortalProps<TTag extends ElementType> = Props<
+  TTag,
+  PortalRenderPropArg,
+  never,
+  { root?: HTMLElement | null }
+>
 
 function PortalFn<TTag extends ElementType = typeof DEFAULT_PORTAL_TAG>(
-  props: PortalProps<TTag>,
+  { root = null, ...props }: PortalProps<TTag>,
   ref: Ref<HTMLElement>
 ) {
   let theirProps = props
   let internalPortalRootRef = useRef<HTMLElement | null>(null)
+
   let portalRef = useSyncRefs(
-    optionalRef<typeof internalPortalRootRef['current']>((ref) => {
-      internalPortalRootRef.current = ref
+    optionalRef<typeof internalPortalRootRef['current']>((el) => {
+      internalPortalRootRef.current = el
     }),
     ref
   )
 
-  useEffect(() => {
-    const id = setInterval(() => console.debug(ref), 500)
-    return () => clearTimeout(id)
-  }, [ref])
+  let setPortalRef = (el: HTMLElement | null) => {
+    if (el) portalRef?.(el)
+  }
 
   let ownerDocument = useRootDocument(internalPortalRootRef)
-  let target = usePortalTarget(internalPortalRootRef)
+  let createdPortalTarget = usePortalTarget(internalPortalRootRef)
+  let target = root ?? createdPortalTarget
+
   let [element] = useState<HTMLDivElement | null>(() => ownerDocument?.createElement('div') ?? null)
   let parent = useContext(PortalParentContext)
   let ready = useServerHandoffComplete()
@@ -136,7 +143,7 @@ function PortalFn<TTag extends ElementType = typeof DEFAULT_PORTAL_TAG>(
 
   if (!ready) return null
 
-  let ourProps = { ref: portalRef }
+  let ourProps = { ref: setPortalRef }
 
   return !target || !element
     ? null

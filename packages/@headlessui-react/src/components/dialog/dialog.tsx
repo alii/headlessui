@@ -134,6 +134,7 @@ export type DialogProps<TTag extends ElementType> = Props<
     initialFocus?: MutableRefObject<HTMLElement | null>
     role?: 'dialog' | 'alertdialog'
     __demoMode?: boolean
+    root?: HTMLElement | null
   }
 >
 
@@ -143,6 +144,7 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
 ) {
   let internalId = useId()
   let {
+    root = null,
     id = `headlessui-dialog-${internalId}`,
     open,
     onClose,
@@ -383,7 +385,7 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
       })}
     >
       <ForcePortalRoot force={true}>
-        <Portal>
+        <Portal root={root}>
           <DialogContext.Provider value={contextBag}>
             <Portal.Group target={internalDialogRef}>
               <ForcePortalRoot force={false}>
