@@ -57,14 +57,13 @@ function usePortalTarget(
     if (target === null) return
     if (!ownerRoot) return
 
-    const root = ownerToRootElement(ownerRoot)
+    const rootOwner = ownerToRootElement(ownerRoot)
+    const scopedRoot = root ? root : rootOwner
 
-    console.log('BODY REF', ref.current)
-
-    if (!root.contains(target)) {
-      root.appendChild(target)
+    if (!scopedRoot.contains(target)) {
+      scopedRoot.appendChild(target)
     }
-  }, [target, ownerRoot])
+  }, [target, ownerRoot, root])
 
   useEffect(() => {
     if (forceInRoot) return

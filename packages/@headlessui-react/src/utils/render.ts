@@ -214,8 +214,6 @@ function _render<TTag extends ElementType, TSlot>(
     Component !== Fragment && dataAttributes
   )
 
-  console.debug('_render', Component, resolvedProps, resolvedChildren)
-
   return createElement(Component, resolvedProps, resolvedChildren)
 }
 
